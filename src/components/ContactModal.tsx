@@ -1,7 +1,9 @@
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CONTACT } from '@/lib/index';
+import { amplitudeEvents } from '@/lib/amplitude';
 
 interface ContactModalProps {
   isOpen: boolean;
@@ -9,6 +11,19 @@ interface ContactModalProps {
 }
 
 export function ContactModal({ isOpen, onClose }: ContactModalProps) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      amplitudeEvents.openConsultationModal('unknown_or_direct');
+    }
+  }, [isOpen]);
+
+  const handleClose = () => {
+    amplitudeEvents.closeConsultationModal();
+    onClose();
+  };
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -17,7 +32,7 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={onClose}
+            onClick={handleClose}
             className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm"
           />
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 pointer-events-none">
@@ -29,7 +44,7 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
             >
               {/* Close button */}
               <button
-                onClick={onClose}
+                onClick={handleClose}
                 className="absolute right-3 top-3 md:right-4 md:top-4 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-background/80 hover:bg-background border border-border/50 text-foreground transition-colors shadow-sm"
               >
                 <X className="w-5 h-5" />
@@ -62,23 +77,44 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
 
                 <form
                   className="space-y-4"
-                  onSubmit={(e) => {
+                  onSubmit={async (e) => {
                     e.preventDefault();
+                    if (isSubmitting) return;
+
                     const formData = new FormData(e.currentTarget);
                     const desc = formData.get('description') as string;
                     const contact = formData.get('contact') as string;
 
-                    try {
-                      // @ts-ignore
-                      if (window.amplitude) {
-                        // @ts-ignore
-                        window.amplitude.track('consult_form_submitted');
-                      }
-                    } catch (err) {}
+                    setIsSubmitting(true);
 
-                    const body = encodeURIComponent(`연락처/이메일: ${contact}\n\n현재 아이디어 및 고민:\n${desc}`);
-                    window.location.href = `mailto:${CONTACT.email}?subject=${encodeURIComponent(CONTACT.mailSubject)}&body=${body}`;
-                    onClose();
+                    try {
+                      const response = await fetch("https://qdvwwnylfhhevwzdfumm.supabase.co/functions/v1/consultation", {
+                        method: "POST",
+                        headers: {
+                          "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                          contact: contact,
+                          content: desc
+                        }),
+                      });
+
+                      if (response.ok) {
+                        amplitudeEvents.submitConsultation('success');
+                        alert("상담 신청이 완료되었습니다. 확인 후 빠르게 연락드리겠습니다!");
+                        onClose();
+                      } else {
+                        amplitudeEvents.submitConsultation('failure', `HTTP status: ${response.status}`);
+                        alert("신청 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+                      }
+                    } catch (error) {
+                      const errMsg = error instanceof Error ? error.message : 'Unknown error';
+                      amplitudeEvents.submitConsultation('failure', errMsg);
+                      console.error("Consultation form error:", error);
+                      alert("신청 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+                    } finally {
+                      setIsSubmitting(false);
+                    }
                   }}
                 >
                   <div className="space-y-1.5">
@@ -91,7 +127,7 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
                       required
                       type="text"
                       placeholder="답변 받으실 연락처"
-                      className="w-full px-4 py-3 mt-2 rounded-xl border border-border/50 bg-background/50 focus:border-primary/50 focus:ring-1 focus:ring-primary/50 outline-none transition-all text-sm"
+                      className="w-full px-4 py-3 mt-2 rounded-xl border border-border/50 bg-background/50 focus:border-primary/50 focus:ring-1 focus:ring-primary/50 outline-none transition-all text-base md:text-sm"
                     />
                   </div>
                   <div className="">
@@ -104,11 +140,11 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
                       required
                       rows={5}
                       placeholder="어떤 서비스인가요? 무엇이 고민이신가요?"
-                      className="w-full h-20 px-4 py-3 mt-2 rounded-xl border border-border/50 bg-background/50 focus:border-primary/50 focus:ring-1 focus:ring-primary/50 outline-none transition-all text-sm resize-none"
+                      className="w-full h-20 px-4 py-3 mt-2 rounded-xl border border-border/50 bg-background/50 focus:border-primary/50 focus:ring-1 focus:ring-primary/50 outline-none transition-all text-base md:text-sm resize-none"
                     />
                   </div>
-                  <Button type="submit" size="lg" className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-bold shadow-lg shadow-primary/20">
-                    상담 신청하기
+                  <Button disabled={isSubmitting} type="submit" size="lg" className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-bold shadow-lg shadow-primary/20">
+                    {isSubmitting ? '신청 중...' : '상담 신청하기'}
                   </Button>
                 </form>
               </div>

@@ -13,6 +13,7 @@ import { SectionTitle, GlassCard, NeonBadge } from '@/components/UI';
 import { ProjectCard } from '@/components/ProjectCard';
 import { ContactModal } from '@/components/ContactModal';
 import { PROJECTS, EXPERIENCES, TECH_STACKS, SERVICE_TIERS, CONTACT, mailtoHref } from '@/lib/index';
+import { amplitudeEvents } from '@/lib/amplitude';
 
 /* ========== HERO SECTION ========== */
 function HeroSection({ onOpenModal }: { onOpenModal: () => void }) {
@@ -611,6 +612,7 @@ function ContactSection({ onOpenModal }: { onOpenModal: () => void }) {
                 variant="outline"
                 asChild
                 className="border-border/60 hover:border-primary/40 font-semibold gap-2"
+                onClick={() => amplitudeEvents.clickExternalLink('phone')}
               >
                 <a href={CONTACT.phoneTel}>
                   <Phone className="w-4 h-4" />
@@ -625,7 +627,13 @@ function ContactSection({ onOpenModal }: { onOpenModal: () => void }) {
               <span>{CONTACT.phone}</span>
             </div>
             <div className="flex justify-center mb-8">
-              <Button size="sm" variant="ghost" asChild className="text-muted-foreground hover:text-foreground gap-2">
+              <Button 
+                size="sm" 
+                variant="ghost" 
+                asChild 
+                className="text-muted-foreground hover:text-foreground gap-2"
+                onClick={() => amplitudeEvents.clickExternalLink('github')}
+              >
                 <a href={CONTACT.github} target="_blank" rel="noopener noreferrer">
                   <Github className="w-4 h-4" />
                   GitHub 보기
@@ -658,16 +666,22 @@ function ContactSection({ onOpenModal }: { onOpenModal: () => void }) {
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const handleOpenModal = (source: 'hero' | 'contact') => {
+    amplitudeEvents.clickConsultation(source);
+    amplitudeEvents.openConsultationModal(source);
+    setIsModalOpen(true);
+  };
+
   return (
     <>
-      <HeroSection onOpenModal={() => setIsModalOpen(true)} />
+      <HeroSection onOpenModal={() => handleOpenModal('hero')} />
       <AboutSection />
       <FreeConsultSection />
       <PricingSection />
       <ProjectsSection />
       <ExperienceSection />
       <SkillsSection />
-      <ContactSection onOpenModal={() => setIsModalOpen(true)} />
+      <ContactSection onOpenModal={() => handleOpenModal('contact')} />
       
       <ContactModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </>

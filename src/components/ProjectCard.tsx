@@ -6,6 +6,7 @@ import { ExternalLink, Github, Users, Calendar, Cpu, TrendingUp, CheckCircle } f
 import { GlassCard, NeonBadge } from '@/components/UI';
 import { springPresets, staggerContainer, staggerItem } from '@/lib/motion';
 import type { Project } from '@/lib/index';
+import { amplitudeEvents } from '@/lib/amplitude';
 
 interface ProjectCardProps {
   project: Project;
@@ -110,7 +111,12 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
             {/* Links */}
             <div className="flex gap-3">
               {project.url && (
-                <Button size="sm" asChild className="bg-primary text-primary-foreground hover:bg-primary/90 gap-1.5">
+                <Button 
+                  size="sm" 
+                  asChild 
+                  className="bg-primary text-primary-foreground hover:bg-primary/90 gap-1.5"
+                  onClick={() => amplitudeEvents.clickProject(project.name)}
+                >
                   <a href={project.url} target="_blank" rel="noopener noreferrer">
                     <ExternalLink className="w-3.5 h-3.5" />
                     라이브 데모
@@ -118,7 +124,13 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
                 </Button>
               )}
               {project.github && (
-                <Button size="sm" variant="outline" asChild className="gap-1.5 border-border/60 hover:border-primary/40">
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  asChild 
+                  className="gap-1.5 border-border/60 hover:border-primary/40"
+                  onClick={() => amplitudeEvents.clickProject(project.name + " (GitHub)")}
+                >
                   <a href={project.github} target="_blank" rel="noopener noreferrer">
                     <Github className="w-3.5 h-3.5" />
                     GitHub

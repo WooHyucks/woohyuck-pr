@@ -1,0 +1,235 @@
+@import url("https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap");
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+==========================================================================
+【AI HANDOVER NOTE】
+1. DESIGN PHILOSOPHY:
+   - 핵심 컨셉: 'Retro-Future Tech Freelancer' - 네온 사이버펑크 감성과 프리미엄 테크 브랜딩의 융합
+   - 시각 전략: Glassmorphism 2.0 + Neon Accents + Physicality (rim-light effects)
+   - 마케팅 목표: '거품 제거 40%'라는 강력한 메시지를 시각적으로 전달하기 위해 날카롭고 효율적인 디자인 언어 사용
+   - 신뢰감 구축: 다크 테마 기반이지만 과도하게 어둡지 않은 slate 계열로 전문성과 접근성 균형
+
+2. TYPOGRAPHY:
+   - Sans: Pretendard - 한글 최적화 폰트로 가독성과 모던함을 동시에 확보. 기술 문서와 마케팅 카피 모두에 적합한 중립적 기하학 구조
+   - Mono: JetBrains Mono - 개발자 정체성 강조. 기술 스택, 코드 스니펫, 수치 데이터(40% 절감 등) 표시에 사용하여 신뢰도 제고
+   - Weight 전략: 헤드라인 800, 강조 CTA 700, 본문 500, 보조 텍스트 400으로 명확한 정보 위계 구축
+
+3. COLOR SYSTEM:
+   - 브랜드 주색: Cyan-Blue (Hue 200) - 테크 산업의 신뢰감 + 네온 사이버펑크의 미래지향성
+   - --brand → --primary (CTA, 링크), --accent (하이라이트, 배지), --ring (포커스 상태)
+   - Neon Gradient 전략: primary와 accent 사이 그라디언트로 '효율성'과 '혁신' 시각화
+   - 의미색 설계:
+     * success (Hue 150, 청록): 비용 절감 40% 같은 긍정 지표
+     * warning (Hue 45, 호박색): 기존 SI 업체 고비용 경고
+     * destructive (Hue 10, 네온 레드): 거품 제거, 문제점 강조
+   - Chart colors: 프로젝트 타임라인, 기술 스택 비교 차트용 - 사이버펑크 팔레트 (cyan, magenta, yellow, green, purple)
+
+4. USAGE GUIDE:
+   - 레이아웃: Full-width hero section (강렬한 첫인상) + Centered container (max-w-6xl) for content sections
+   - Glassmorphism 적용: 프로젝트 카드, 가격 비교 섹션에 backdrop-blur-xl + border-white/10 + shadow-2xl
+   - Rim-light 효과: 주요 CTA 버튼과 프로젝트 썸네일에 box-shadow: 0 0 20px oklch(0.7 0.25 200 / 0.5) 적용
+   - Neon glow: hover 상태에서 text-shadow와 drop-shadow로 네온 효과 (특히 '40% 거품 제거' 같은 핵심 수치)
+   - 섹션 구분: 각 섹션 사이 subtle gradient border (from-primary/20 to-accent/20)
+   - 애니메이션: Framer Motion으로 스크롤 기반 fade-in + slide-up (전문성 강조, 과도한 효과 지양)
+   - 특수 규칙: '비용 절감' 섹션은 warning 색상 배경 + destructive 텍스트로 시각적 대비 극대화
+==========================================================================
+*/
+
+:root {
+  /* Typography */
+  --font-sans: Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', Monaco, Inconsolata, 'Fira Code', 'Droid Sans Mono', 'Source Code Pro', monospace;
+  
+  /* Radius */
+  --radius: 0.75rem;
+
+  /* Core UI Tokens */
+  --background: oklch(0.98 0.005 200);
+  --foreground: oklch(0.15 0.02 200);
+  --card: oklch(0.99 0.003 200);
+  --card-foreground: oklch(0.18 0.02 200);
+  --popover: oklch(0.99 0.003 200);
+  --popover-foreground: oklch(0.15 0.02 200);
+  --primary: oklch(0.55 0.22 200);
+  --primary-foreground: oklch(0.98 0.005 200);
+  --secondary: oklch(0.92 0.01 200);
+  --secondary-foreground: oklch(0.22 0.02 200);
+  --muted: oklch(0.94 0.008 200);
+  --muted-foreground: oklch(0.48 0.015 200);
+  --accent: oklch(0.62 0.24 320);
+  --accent-foreground: oklch(0.98 0.005 200);
+  --destructive: oklch(0.58 0.24 10);
+  --destructive-foreground: oklch(0.98 0.005 10);
+  --border: oklch(0.88 0.01 200);
+  --input: oklch(0.88 0.01 200);
+  --ring: oklch(0.55 0.22 200);
+  
+  /* Chart Tokens */
+  --chart-1: oklch(0.58 0.22 200);
+  --chart-2: oklch(0.62 0.24 320);
+  --chart-3: oklch(0.68 0.20 60);
+  --chart-4: oklch(0.60 0.20 150);
+  --chart-5: oklch(0.56 0.22 280);
+  
+  /* Sidebar Tokens */
+  --sidebar: oklch(0.97 0.005 200);
+  --sidebar-foreground: oklch(0.25 0.02 200);
+  --sidebar-primary: oklch(0.55 0.22 200);
+  --sidebar-primary-foreground: oklch(0.98 0.005 200);
+  --sidebar-accent: oklch(0.92 0.01 200);
+  --sidebar-accent-foreground: oklch(0.22 0.02 200);
+  --sidebar-border: oklch(0.88 0.01 200);
+  --sidebar-ring: oklch(0.55 0.22 200);
+}
+
+.dark {
+  --background: oklch(0.12 0.015 220);
+  --foreground: oklch(0.92 0.01 200);
+  --card: oklch(0.15 0.018 220);
+  --card-foreground: oklch(0.90 0.01 200);
+  --popover: oklch(0.14 0.018 220);
+  --popover-foreground: oklch(0.92 0.01 200);
+  --primary: oklch(0.65 0.26 200);
+  --primary-foreground: oklch(0.12 0.015 220);
+  --secondary: oklch(0.22 0.025 220);
+  --secondary-foreground: oklch(0.88 0.01 200);
+  --muted: oklch(0.20 0.02 220);
+  --muted-foreground: oklch(0.58 0.015 200);
+  --accent: oklch(0.68 0.28 320);
+  --accent-foreground: oklch(0.12 0.015 220);
+  --destructive: oklch(0.62 0.28 10);
+  --destructive-foreground: oklch(0.95 0.01 10);
+  --border: oklch(0.25 0.025 220);
+  --input: oklch(0.25 0.025 220);
+  --ring: oklch(0.65 0.26 200);
+  
+  /* Chart Tokens */
+  --chart-1: oklch(0.65 0.26 200);
+  --chart-2: oklch(0.68 0.28 320);
+  --chart-3: oklch(0.72 0.24 60);
+  --chart-4: oklch(0.66 0.24 150);
+  --chart-5: oklch(0.62 0.26 280);
+  
+  /* Sidebar Tokens */
+  --sidebar: oklch(0.10 0.018 220);
+  --sidebar-foreground: oklch(0.85 0.01 200);
+  --sidebar-primary: oklch(0.65 0.26 200);
+  --sidebar-primary-foreground: oklch(0.12 0.015 220);
+  --sidebar-accent: oklch(0.22 0.025 220);
+  --sidebar-accent-foreground: oklch(0.88 0.01 200);
+  --sidebar-border: oklch(0.20 0.025 220);
+  --sidebar-ring: oklch(0.65 0.26 200);
+}
+
+@theme inline {
+  /* Shadcn Core Mapping */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Charts Mapping */
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  /* Sidebar Mapping */
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Typography */
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+
+  /* Radius */
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    @apply scroll-smooth antialiased;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans min-h-screen;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
+  }
+
+  code, pre {
+    @apply font-mono;
+  }
+
+  ::selection {
+    @apply bg-primary/20 text-primary;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground/20 rounded-full hover:bg-muted-foreground/40;
+  }
+}
+
+/* PPT형 소개 페이지 (/ppt) — 당근·숨고·크몽 캡처용 */
+.ppt-page {
+  background: oklch(0.08 0.015 220);
+}
+
+@media print {
+  .ppt-page {
+    background: #020709;
+  }
+  .ppt-slide {
+    break-after: page;
+    break-inside: avoid;
+    margin: 0 auto;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    aspect-ratio: 16 / 9;
+  }
+}

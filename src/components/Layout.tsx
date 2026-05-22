@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Menu, X, Zap } from 'lucide-react';
 import { springPresets } from '@/lib/motion';
 import { BRAND, ROUTE_PATHS } from '@/lib/index';
+import { Toaster } from '@/components/ui/sonner';
 
 const NAV_ITEMS = [
   { label: '소개', href: 'about' },
@@ -139,6 +140,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </p>
         </div>
       </footer>
+      <Toaster position="top-center" richColors />
     </div>
   );
 }

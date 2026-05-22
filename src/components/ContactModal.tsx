@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X } from 'lucide-react';
+import { X, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CONTACT } from '@/lib/index';
 import { amplitudeEvents } from '@/lib/amplitude';
+import { toast } from '@/components/ui/sonner';
 
 interface ContactModalProps {
   isOpen: boolean;
@@ -101,17 +102,23 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
 
                       if (response.ok) {
                         amplitudeEvents.submitConsultation('success');
-                        alert("상담 신청이 완료되었습니다. 확인 후 빠르게 연락드리겠습니다!");
+                        toast.success('상담 신청이 완료되었습니다!', {
+                          description: '확인 후 빠르게 연락드리겠습니다.',
+                        });
                         onClose();
                       } else {
                         amplitudeEvents.submitConsultation('failure', `HTTP status: ${response.status}`);
-                        alert("신청 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+                        toast.error('신청 중 오류가 발생했습니다.', {
+                          description: '잠시 후 다시 시도해주세요.',
+                        });
                       }
                     } catch (error) {
                       const errMsg = error instanceof Error ? error.message : 'Unknown error';
                       amplitudeEvents.submitConsultation('failure', errMsg);
                       console.error("Consultation form error:", error);
-                      alert("신청 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+                      toast.error('신청 중 오류가 발생했습니다.', {
+                        description: '잠시 후 다시 시도해주세요.',
+                      });
                     } finally {
                       setIsSubmitting(false);
                     }
@@ -144,7 +151,12 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
                     />
                   </div>
                   <Button disabled={isSubmitting} type="submit" size="lg" className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-bold shadow-lg shadow-primary/20">
-                    {isSubmitting ? '신청 중...' : '상담 신청하기'}
+                    {isSubmitting ? (
+                      <span className="flex items-center gap-2">
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        신청 중...
+                      </span>
+                    ) : '상담 신청하기'}
                   </Button>
                 </form>
               </div>
